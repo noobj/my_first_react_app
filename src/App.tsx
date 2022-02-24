@@ -2,12 +2,12 @@ import { Component } from 'react';
 
 type SquareProps = {
   value: string;
-  onClick: () => any;
+  onClick: () => void;
 };
 
 type BodardProps = {
   squares: string[];
-  onClick: (i: number) => any;
+  onClick: (i: number) => void;
 };
 
 function Square(props: SquareProps) {
@@ -24,25 +24,17 @@ class Board extends Component<BodardProps> {
   }
 
   render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
+    const arr = [0, 3, 6];
+    const elements = arr.map((v) => {
+      const squares = [];
+      for (let i = v; i < v + 3; i++) squares.push(this.renderSquare(i));
+      return (
+        <div key={v} className="board-row">
+          {squares}
         </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+      );
+    });
+    return <div>{elements}</div>;
   }
 }
 
