@@ -26,11 +26,9 @@ class Board extends Component<BodardProps> {
   render() {
     const arr = [0, 3, 6];
     const elements = arr.map((v) => {
-      const squares = [];
-      for (let i = v; i < v + 3; i++) squares.push(this.renderSquare(i));
       return (
         <div key={v} className="board-row">
-          {squares}
+          {[v, v + 1, v + 2].map((value) => this.renderSquare(value))}
         </div>
       );
     });
@@ -44,6 +42,7 @@ type GameState = {
   }[];
   stepNumber: number;
   xIsNext: boolean;
+  sortDesc: boolean;
 };
 
 class Game extends Component {
@@ -54,7 +53,8 @@ class Game extends Component {
       }
     ],
     stepNumber: 0,
-    xIsNext: true
+    xIsNext: true,
+    sortDesc: false
   };
 
   handleClick(i: number) {
@@ -81,10 +81,18 @@ class Game extends Component {
       stepNumber: step,
       xIsNext: step % 2 === 0
     });
+
+    this.setState({
+      history: this.state.history.slice(0, step + 1)
+    });
   }
 
   render() {
-    const history = this.state.history;
+    let history: {
+      squares: string[];
+    }[] = [];
+
+    history = this.state.sortDesc ? this.state.history : this.state.history.reverse();
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
@@ -92,7 +100,13 @@ class Game extends Component {
       const desc = move ? 'Go to move #' + move : 'Go to game start';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          {move === this.state.stepNumber ? (
+            <button onClick={() => this.jumpTo(move)} className="font-bold">
+              {desc}
+            </button>
+          ) : (
+            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          )}
         </li>
       );
     });
@@ -110,7 +124,9 @@ class Game extends Component {
           <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
-          <div>{status}</div>
+          <div>
+            {status} <button>Sort</button>
+          </div>
           <ol>{moves}</ol>
         </div>
       </div>
