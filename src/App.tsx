@@ -76,6 +76,12 @@ class Game extends Component {
     });
   }
 
+  handleSort = () => {
+    this.setState({
+      sortDesc: !this.state.sortDesc
+    });
+  };
+
   jumpTo(step: number) {
     this.setState({
       stepNumber: step,
@@ -88,24 +94,23 @@ class Game extends Component {
   }
 
   render() {
-    let history: {
-      squares: string[];
-    }[] = [];
-
-    history = this.state.sortDesc ? this.state.history : this.state.history.reverse();
+    const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
+    const desc = this.state.sortDesc;
 
-    const moves = history.map((step, move) => {
-      const desc = move ? 'Go to move #' + move : 'Go to game start';
+    const historyForMove = !desc ? history : history.reverse();
+    const moves = historyForMove.map((step, move) => {
+      move = !desc ? move : historyForMove.length - move - 1;
+      const describe = move ? 'Go to move #' + move : 'Go to game start';
       return (
         <li key={move}>
           {move === this.state.stepNumber ? (
             <button onClick={() => this.jumpTo(move)} className="font-bold">
-              {desc}
+              {describe}
             </button>
           ) : (
-            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+            <button onClick={() => this.jumpTo(move)}>{describe}</button>
           )}
         </li>
       );
@@ -125,7 +130,7 @@ class Game extends Component {
         </div>
         <div className="game-info">
           <div>
-            {status} <button>Sort</button>
+            {status} <button onClick={this.handleSort}>Sort</button>
           </div>
           <ol>{moves}</ol>
         </div>
@@ -153,5 +158,20 @@ function calculateWinner(squares: string[]) {
   }
   return null;
 }
+
+// declare global {
+//   interface Array<T> {
+//     reverseMap<U>(
+//       callbackfn: (value: T, index: number, array: readonly T[]) => U,
+//       thisArg?: any
+//     ): U[];
+//   }
+// }
+
+// Array.prototype.reverseMap = function (callback) {
+//   const arr = [];
+//   for (let i = this.length - 1; i >= 0; i--) arr.push(callback(this[i], i, this));
+//   return arr;
+// };
 
 export default Game;
