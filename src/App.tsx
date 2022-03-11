@@ -15,7 +15,7 @@ type BodardProps = {
 function Square(props: SquareProps) {
   const enableHighlight = props.highlight ? 'highlighted' : '';
   return (
-    <button className={`square ${enableHighlight}`} onClick={props.onClick}>
+    <button className={`text-red square ${enableHighlight}`} onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -117,7 +117,7 @@ class Game extends Component {
       return (
         <li key={move}>
           {move === this.state.stepNumber ? (
-            <button onClick={() => this.jumpTo(move)} className="font-bold">
+            <button onClick={() => this.jumpTo(move)} className="font-bold text-red-600">
               {describe}
             </button>
           ) : (
