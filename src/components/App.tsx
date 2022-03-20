@@ -20,9 +20,9 @@ export default class App extends Component<unknown, AppState> {
 
   render() {
     return (
-      <div>
+      <>
         <DatePickerInput isStart={true} value={this.state.start} onChange={this.changeHandler} />
-      </div>
+      </>
     );
   }
 }
