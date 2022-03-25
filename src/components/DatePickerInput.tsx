@@ -1,7 +1,6 @@
-import { Component, SyntheticEvent, MouseEvent } from 'react';
+import { Component, SyntheticEvent, MouseEvent, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import { format } from 'date-fns';
-
 import 'react-datepicker/dist/react-datepicker.css';
 
 type Props = {
@@ -34,46 +33,49 @@ class DatePickerInput extends Component<Props, State> {
     this.props.onChange(true, format(date, 'yyyy-MM-dd'));
   };
 
+  handleMouseEnter = (e: SyntheticEvent<HTMLElement>) => {
+    e.currentTarget.style.color = 'cornflowerblue';
+  };
+
+  handleMouseLeave = (e: SyntheticEvent<HTMLElement>) => {
+    e.currentTarget.style.color = 'currentColor';
+  };
+
   render() {
     let selectedDate = new Date(this.props.value);
 
     // set to today, if the format is invalid
     if (isNaN(selectedDate.getTime())) selectedDate = new Date();
 
-    return (
-      <div className="w-min">
+    const ExampleCustomInput = forwardRef<HTMLButtonElement, any>(({ value, onClick }, ref) => (
+      <button className="example-custom-input" onClick={onClick} ref={ref}>
         <input
           className="text-black text-3xl font-bold inline"
           size={9}
           onChange={this.handleChange}
           type="text"
-          value={this.props.value}
-          onClick={this.handleClick}
+          value={value}
         />
-        <p className="inline">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="26"
-            height="26"
-            fill="currentColor"
-            className="bi bi-calendar-minus"
-            viewBox="0 0 16 16"
-          >
-            <path d="M5.5 9.5A.5.5 0 0 1 6 9h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5z" />
-            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-          </svg>
-        </p>
-        {this.state.isOpen && (
-          <DatePicker
-            dateFormat="yyyy-MM-dd"
-            className="text-black"
-            selected={selectedDate}
-            onChange={this.handleDatePickerChange}
-            onClickOutside={this.closeTheDatePicker}
-            showMonthDropdown
-            inline
-          />
-        )}
+        <i
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+          className="bi bi-calendar-fill text-3xl ml-2"
+        />
+      </button>
+    ));
+    ExampleCustomInput.displayName = 'whatever';
+
+    return (
+      <div className="w-fit inline">
+        <DatePicker
+          dateFormat="yyyy-MM-dd"
+          className="text-black"
+          selected={selectedDate}
+          onChange={this.handleDatePickerChange}
+          onClickOutside={this.closeTheDatePicker}
+          showMonthDropdown
+          customInput={<ExampleCustomInput />}
+        />
       </div>
     );
   }

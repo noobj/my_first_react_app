@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import "bootstrap-icons/font/bootstrap-icons.css";
 body {
     font: 14px "Century Gothic", Futura, sans-serif;
     margin: 20px;

@@ -22,6 +22,8 @@ export default class App extends Component<unknown, AppState> {
     return (
       <>
         <DatePickerInput isStart={true} value={this.state.start} onChange={this.changeHandler} />
+        <i className="bi bi-arrow-right text-xl ml-3 mr-3" />
+        <DatePickerInput isStart={false} value={this.state.end} onChange={this.changeHandler} />
       </>
     );
   }
