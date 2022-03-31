@@ -11,7 +11,7 @@ type AppState = {
   start: string;
   end: string;
   total: number;
-  chartData: any;
+  categories: Category[];
   categoriesExclude: Set<string>;
   entriesSortByDate: boolean;
 };
@@ -21,14 +21,12 @@ export default class App extends Component<unknown, AppState> {
     start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
     total: 0,
-    chartData: {
-      datasets: []
-    },
+    categories: [],
     categoriesExclude: new Set(),
     entriesSortByDate: false
   };
 
-  fetchAndSetEntries = async () => {
+  fetchEntries = async () => {
     const params = new URLSearchParams();
     params.set('timeStart', this.state.start);
     params.set('timeEnd', this.state.end);
@@ -39,14 +37,35 @@ export default class App extends Component<unknown, AppState> {
       `https://192.168.56.101:3333/dev/entries?${params.toString()}`
     ).then((res) => res.json());
 
-    const categories = response.categories;
-    const total = response.total;
+    const { categories, total } = response;
 
-    const categoryNames = categories.map(({ name }: { name: string }) => name);
-    const categoryPercentages = categories.map((v: Category) => v.percentage);
-    const categoryColors = categories.map((v: Category) => v.color);
+    return { categories, total };
+  };
 
-    const data = {
+  async componentDidMount() {
+    const { categories, total } = await this.fetchEntries();
+
+    this.setState({ categories: categories });
+    this.setState({ total: total });
+  }
+
+  changeHandler = (isStart: boolean, dateStr: string) => {
+    const cbAfterDateChanged = () =>
+      this.fetchEntries().then(({ categories, total }) => {
+        this.setState({ categories: categories });
+        this.setState({ total: total });
+      });
+
+    if (isStart) this.setState({ start: dateStr }, cbAfterDateChanged);
+    else this.setState({ end: dateStr }, cbAfterDateChanged);
+  };
+
+  turnCategoriesToChartData = () => {
+    const categoryNames = this.state.categories.map(({ name }: { name: string }) => name);
+    const categoryPercentages = this.state.categories.map((v: Category) => v.percentage);
+    const categoryColors = this.state.categories.map((v: Category) => v.color);
+
+    return {
       labels: categoryNames,
       datasets: [
         {
@@ -56,22 +75,11 @@ export default class App extends Component<unknown, AppState> {
         }
       ]
     };
-
-    this.setState({ chartData: data });
-    this.setState({ total: total });
-    return { chartData: data, total };
-  };
-
-  async componentDidMount() {
-    await this.fetchAndSetEntries();
-  }
-
-  changeHandler = async (isStart: boolean, dateStr: string) => {
-    if (isStart) this.setState({ start: dateStr }, this.fetchAndSetEntries);
-    else this.setState({ end: dateStr }, this.fetchAndSetEntries);
   };
 
   render() {
+    const chartData = this.turnCategoriesToChartData();
+
     return (
       <>
         <DatePickerInput isStart={true} value={this.state.start} onChange={this.changeHandler} />
@@ -82,7 +90,7 @@ export default class App extends Component<unknown, AppState> {
         </h1>
         <div className="flex flex-col sm:flex-row">
           <div className="flex-auto max-w-screen-sm">
-            <Pie data={this.state.chartData} />
+            <Pie data={chartData} />
           </div>
         </div>
       </>
