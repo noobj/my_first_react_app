@@ -66,7 +66,7 @@ class DatePickerInput extends Component<Props, State> {
     ExampleCustomInput.displayName = 'whatever';
 
     return (
-      <div className="w-fit inline">
+      <div className="inline-block w-fit">
         <DatePicker
           dateFormat="yyyy-MM-dd"
           className="text-black"
