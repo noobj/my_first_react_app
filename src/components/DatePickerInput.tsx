@@ -50,7 +50,7 @@ class DatePickerInput extends Component<Props, State> {
     const ExampleCustomInput = forwardRef<HTMLButtonElement, any>(({ value, onClick }, ref) => (
       <button className="example-custom-input" onClick={onClick} ref={ref}>
         <input
-          className="text-black text-3xl font-bold inline"
+          className="text-black text-2xl font-semibold inline rounded-lg text-center"
           size={9}
           onChange={this.handleChange}
           type="text"
