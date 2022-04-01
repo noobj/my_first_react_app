@@ -31,8 +31,9 @@ function DatePickerInput(props: Props) {
   // set to today, if the format is invalid
   if (isNaN(selectedDate.getTime())) selectedDate = new Date();
 
-  const ExampleCustomInput = forwardRef<HTMLButtonElement, any>(({ value }, ref) => (
-    <button className="example-custom-input" ref={ref}>
+  // eslint-disable-next-line react/prop-types
+  const ExampleCustomInput = forwardRef<HTMLButtonElement, any>(({ value, onClick }, ref) => (
+    <button className="example-custom-input" onClick={onClick} ref={ref}>
       <input
         className="text-black text-2xl font-semibold inline rounded-lg text-center"
         size={11}
