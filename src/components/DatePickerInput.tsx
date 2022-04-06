@@ -10,12 +10,8 @@ type Props = {
 };
 
 function DatePickerInput(props: Props) {
-  const handleChange = (e: SyntheticEvent<HTMLInputElement>) => {
-    props.onChange(props.isStart, e.currentTarget.value);
-  };
-
   const handleDatePickerChange = (date: Date) => {
-    props.onChange(true, format(date, 'yyyy-MM-dd'));
+    props.onChange(props.isStart, format(date, 'yyyy-MM-dd'));
   };
 
   const handleMouseEnter = (e: SyntheticEvent<HTMLElement>) => {
@@ -26,20 +22,15 @@ function DatePickerInput(props: Props) {
     e.currentTarget.style.color = 'currentColor';
   };
 
-  let selectedDate = new Date(props.value);
-
-  // set to today, if the format is invalid
-  if (isNaN(selectedDate.getTime())) selectedDate = new Date();
-
   // eslint-disable-next-line react/prop-types
   const ExampleCustomInput = forwardRef<HTMLButtonElement, any>(({ value, onClick }, ref) => (
     <button className="example-custom-input" onClick={onClick} ref={ref}>
       <input
         className="text-black text-2xl font-semibold inline rounded-lg text-center"
         size={11}
-        onChange={handleChange}
         type="text"
         value={value}
+        readOnly={true}
       />
       <i
         onMouseEnter={handleMouseEnter}
@@ -55,7 +46,7 @@ function DatePickerInput(props: Props) {
       <DatePicker
         dateFormat="yyyy-MM-dd"
         className="text-black"
-        selected={selectedDate}
+        selected={new Date(props.value)}
         onChange={handleDatePickerChange}
         showMonthDropdown
         customInput={<ExampleCustomInput />}
