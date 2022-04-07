@@ -20,11 +20,11 @@ export function MainContent(props: Props) {
       <h1 className="text-3xl font-bold">
         {props.total === -1 ? <>loading...</> : <>Total: {props.total}</>}
       </h1>
-      <div className="flex flex-col sm:flex-row">
-        <div className="flex-auto max-w-screen-sm">
+      <div className="flex sm:flex-row">
+        <div className="max-w-screen-sm">
           <Pie data={turnCategoriesToChartData(props.categories)} />
         </div>
-        <div className="flex-auto flex-col">{categoryLists}</div>
+        <div className="grow flex-col">{categoryLists}</div>
       </div>
     </div>
   );
