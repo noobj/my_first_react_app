@@ -2,6 +2,7 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Category } from '../interfaces/Category.interface';
 import CategoryList from './CategoryList';
+import { formatToCurrency } from '../helper';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,10 +19,10 @@ export function MainContent(props: Props) {
   return (
     <div className="m-2">
       <h1 className="text-3xl font-bold">
-        {props.total === -1 ? <>loading...</> : <>Total: {props.total}</>}
+        {props.total === -1 ? <>loading...</> : <>Total: {`${formatToCurrency(props.total)}`}</>}
       </h1>
       <div className="flex sm:flex-row">
-        <div className="max-w-screen-sm">
+        <div className="flex-auto max-w-screen-sm">
           <Pie data={turnCategoriesToChartData(props.categories)} />
         </div>
         <div className="grow flex-col">{categoryLists}</div>

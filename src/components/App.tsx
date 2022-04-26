@@ -1,42 +1,71 @@
-import { useEffect, useState } from 'react';
-import { format, endOfMonth, startOfMonth, startOfYear } from 'date-fns';
-import ControlPanel from './ControlPanel';
+import { createContext, useEffect, useReducer, useState } from 'react';
+import { format, endOfMonth, startOfMonth } from 'date-fns';
+import ControlPanel from './control_panel/ControlPanel';
 import { MainContent } from './MainContent';
 import Login from './login/Login';
 
+type InitialStateType = {
+  start: string;
+  end: string;
+};
+
+const initialState = {
+  start: format(startOfMonth(new Date()), 'yyyy-MM-dd HH:mm'),
+  end: format(endOfMonth(new Date()), 'yyyy-MM-dd HH:mm')
+};
+
+function reducer(
+  state: { start: string; end: string },
+  action: { isStart: boolean; value: string }
+) {
+  switch (action.isStart) {
+    case true:
+      return { ...state, start: action.value };
+    case false:
+      return { ...state, end: action.value };
+    default:
+      return state;
+  }
+}
+
+export const DateContext = createContext<{
+  state: InitialStateType;
+  dispatch: React.Dispatch<any>;
+}>({
+  state: initialState,
+  dispatch: () => null
+});
+
 export function App() {
-  const [start, setStart] = useState(format(startOfYear(new Date()), 'yyyy-MM-dd'));
-  const [end, setEnd] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
+  const [state, dispatch] = useReducer(reducer, initialState);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState([]);
   const [categoriesExclude, setCategoriesExclude] = useState(new Set());
   const [entriesSortByDate, setEntriesSortByDate] = useState(false);
   const [isLogined, setIsLogined] = useState(true);
 
-  async function fetchEntries() {
-    const params = new URLSearchParams();
-    params.set('timeStart', start);
-    params.set('timeEnd', end);
-    params.set('categoriesExclude', Array.from(categoriesExclude).toString());
-    params.set('entriesSortByDate', entriesSortByDate.toString());
-    setTotal(-1);
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  useEffect(() => {
+    async function fetchEntries() {
+      const params = new URLSearchParams();
+      params.set('timeStart', state.start);
+      params.set('timeEnd', state.end);
+      setTotal(-1);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-    const res = await fetch(`${backendUrl}/entries?${params.toString()}`, {
-      credentials: 'include'
-    });
-    if (res.status === 401) {
-      setIsLogined(false);
+      const res = await fetch(`${backendUrl}/entries?${params.toString()}`, {
+        credentials: 'include'
+      });
+      if (res.status === 401) {
+        setIsLogined(false);
 
-      return null;
+        return null;
+      }
+
+      setIsLogined(true);
+      const { categories, total } = await res.json();
+      return { categories, total };
     }
 
-    setIsLogined(true);
-    const { categories, total } = await res.json();
-    return { categories, total };
-  }
-
-  useEffect(() => {
     async function fetchContent() {
       const result = await fetchEntries();
       if (result === null) return;
@@ -47,18 +76,15 @@ export function App() {
     }
 
     fetchContent();
-  }, [start, end]);
-
-  const changeHandler = async (isStart: boolean, dateStr: string) => {
-    if (isStart) setStart(dateStr);
-    else setEnd(dateStr);
-  };
+  }, [state]);
 
   if (!isLogined) return <Login />;
 
   return (
     <>
-      <ControlPanel start={start} end={end} changeHandler={changeHandler} />
+      <DateContext.Provider value={{ state, dispatch }}>
+        <ControlPanel />
+      </DateContext.Provider>
       <MainContent categories={categories} total={total} />
     </>
   );
