@@ -1,7 +1,7 @@
 import { createContext, useEffect, useReducer, useState } from 'react';
 import { format, endOfMonth, startOfMonth } from 'date-fns';
 import ControlPanel from './control_panel/ControlPanel';
-import { MainContent } from './MainContent';
+import { MainContent } from './main_content/MainContent';
 import Login from './login/Login';
 import { fetchOrRefreshAuth } from '../helper';
 

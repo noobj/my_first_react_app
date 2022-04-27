@@ -1,8 +1,9 @@
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Category } from '../interfaces/Category.interface';
+import { Category } from '../../interfaces/Category.interface';
 import CategoryList from './CategoryList';
-import { formatToCurrency } from '../helper';
+import { formatToCurrency } from '../../helper';
+import { useState } from 'react';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -12,8 +13,21 @@ type Props = {
 };
 
 export function MainContent(props: Props) {
+  const [categoryOpened, setCategoryOpened] = useState(-1);
+
+  const clickHandler = (id: number) => {
+    id === categoryOpened ? setCategoryOpened(-1) : setCategoryOpened(id);
+  };
+
   const categoryLists = props.categories.map((category) => {
-    return <CategoryList key={category._id} category={category} />;
+    return (
+      <CategoryList
+        key={category._id}
+        category={category}
+        onClick={() => clickHandler(category._id)}
+        categoryOpened={categoryOpened}
+      />
+    );
   });
 
   return (
