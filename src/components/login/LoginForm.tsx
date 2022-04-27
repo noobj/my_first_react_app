@@ -1,8 +1,10 @@
-import { SyntheticEvent, useState } from 'react';
+import { SyntheticEvent, useContext, useState } from 'react';
+import { AppContext } from '../App';
 
 function LoginForm() {
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
+  const appContext = useContext(AppContext);
   const baseUrl = process.env.REACT_APP_BACKEND_URL;
 
   function handleAccountChange(event: SyntheticEvent<HTMLInputElement>) {
@@ -34,7 +36,8 @@ function LoginForm() {
       alert(body.message);
       return;
     }
-    window.location.href = '/';
+
+    appContext.setIsLogined(true);
   }
 
   return (
