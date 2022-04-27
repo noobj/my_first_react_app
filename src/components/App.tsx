@@ -3,6 +3,7 @@ import { format, endOfMonth, startOfMonth } from 'date-fns';
 import ControlPanel from './control_panel/ControlPanel';
 import { MainContent } from './MainContent';
 import Login from './login/Login';
+import { fetchOrRefreshAuth } from '../helper';
 
 type InitialStateType = {
   start: string;
@@ -28,12 +29,14 @@ function reducer(
   }
 }
 
-export const DateContext = createContext<{
+export const AppContext = createContext<{
   state: InitialStateType;
   dispatch: React.Dispatch<any>;
+  setIsLogined: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
   state: initialState,
-  dispatch: () => null
+  dispatch: () => null,
+  setIsLogined: () => null
 });
 
 export function App() {
@@ -50,9 +53,8 @@ export function App() {
       params.set('timeStart', state.start);
       params.set('timeEnd', state.end);
       setTotal(-1);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-      const res = await fetch(`${backendUrl}/entries?${params.toString()}`, {
+      const res = await fetchOrRefreshAuth(`/entries?${params.toString()}`, {
         credentials: 'include'
       });
       if (res.status === 401) {
@@ -75,16 +77,21 @@ export function App() {
       setTotal(total);
     }
 
-    fetchContent();
-  }, [state]);
+    if (isLogined) fetchContent();
+  }, [state, isLogined]);
 
-  if (!isLogined) return <Login />;
+  if (!isLogined)
+    return (
+      <AppContext.Provider value={{ state, dispatch, setIsLogined }}>
+        <Login />
+      </AppContext.Provider>
+    );
 
   return (
     <>
-      <DateContext.Provider value={{ state, dispatch }}>
+      <AppContext.Provider value={{ state, dispatch, setIsLogined }}>
         <ControlPanel />
-      </DateContext.Provider>
+      </AppContext.Provider>
       <MainContent categories={categories} total={total} />
     </>
   );
