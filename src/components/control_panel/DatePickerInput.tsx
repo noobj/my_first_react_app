@@ -29,7 +29,7 @@ function DatePickerInput(props: Props) {
     <button className="example-custom-input" onClick={onClick} ref={ref}>
       <input
         className="text-black text-2xl font-semibold inline rounded-lg text-center"
-        size={11}
+        size={5}
         type="text"
         value={value}
         readOnly={true}
@@ -46,7 +46,7 @@ function DatePickerInput(props: Props) {
   return (
     <div className="inline-block w-fit">
       <DatePicker
-        dateFormat="yyyy-MM-dd"
+        dateFormat="MM-dd"
         className="text-black"
         selected={new Date(defaultValue)}
         onChange={handleDatePickerChange}

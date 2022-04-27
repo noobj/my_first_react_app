@@ -15,8 +15,10 @@ export default function ControlPanel() {
         <DatePickerInput isStart={true} />
         <i className="bi bi-arrow-right text-xl ml-3 mr-3" />
         <DatePickerInput isStart={false} />
-        <MonthlyButton isLast={true} />
-        <MonthlyButton isLast={false} />
+        <div className="flex items-center border-l border-slate-200 ml-6 pl-3 dark:border-slate-600">
+          <MonthlyButton isLast={true} />
+          <MonthlyButton isLast={false} />
+        </div>
         <SyncButton />
       </div>
     </div>
