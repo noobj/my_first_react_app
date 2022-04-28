@@ -2,7 +2,7 @@ import { SyntheticEvent, forwardRef, useContext } from 'react';
 import DatePicker from 'react-datepicker';
 import { format } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
-import { AppContext } from '../App';
+import { AppContext, DispatchType } from '../../App';
 
 type Props = {
   isStart: boolean;
@@ -13,7 +13,11 @@ function DatePickerInput(props: Props) {
   const defaultValue = props.isStart ? appContext.state.start : appContext.state.end;
 
   const handleDatePickerChange = (date: Date) => {
-    appContext.dispatch({ isStart: props.isStart, value: format(date, 'yyyy-MM-dd') });
+    appContext.dispatch({
+      type: DispatchType.Date,
+      isStart: props.isStart,
+      value: format(date, 'yyyy-MM-dd')
+    });
   };
 
   const handleMouseEnter = (e: SyntheticEvent<HTMLElement>) => {

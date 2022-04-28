@@ -1,15 +1,15 @@
 import { useContext } from 'react';
 import { fetchOrRefreshAuth } from '../../helper';
-import { AppContext } from '../App';
+import { AppContext, DispatchType } from '../../App';
 
 function SyncButton() {
   const appContext = useContext(AppContext);
 
-  const handleClick = async () => {
+  const handleClick = () => {
     fetchOrRefreshAuth(`/entries/sync`, { method: 'POST' })
       .then((res) => res.json())
       .then((res) => {
-        if (res.status === 401) appContext.setIsLogined(false);
+        if (res.status === 401) appContext.dispatch({ type: DispatchType.Login, value: false });
 
         if (res.status === 301) window.location.href = res.message;
 

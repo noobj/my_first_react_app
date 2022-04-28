@@ -1,5 +1,6 @@
 import DatePickerInput from './DatePickerInput';
 import { MonthlyButton } from './MonthlyButton';
+import { SortButton } from './SortButton';
 import SyncButton from './SyncButton';
 
 export default function ControlPanel() {
@@ -18,6 +19,7 @@ export default function ControlPanel() {
         <div className="flex items-center border-l border-slate-200 ml-6 pl-3 dark:border-slate-600">
           <MonthlyButton isLast={true} />
           <MonthlyButton isLast={false} />
+          <SortButton />
         </div>
         <SyncButton />
       </div>

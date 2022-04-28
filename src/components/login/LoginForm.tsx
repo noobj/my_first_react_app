@@ -1,5 +1,5 @@
 import { SyntheticEvent, useContext, useState } from 'react';
-import { AppContext } from '../App';
+import { AppContext, DispatchType } from '../../App';
 
 function LoginForm() {
   const [account, setAccount] = useState('');
@@ -37,7 +37,7 @@ function LoginForm() {
       return;
     }
 
-    appContext.setIsLogined(true);
+    appContext.dispatch({ type: DispatchType.Login, value: true });
   }
 
   return (

@@ -1,6 +1,6 @@
 import { SyntheticEvent, useContext } from 'react';
 import { format, startOfMonth, endOfMonth, sub, add } from 'date-fns';
-import { AppContext } from '../App';
+import { AppContext, DispatchType } from '../../App';
 
 export function MonthlyButton(props: { isLast: boolean }) {
   const color = props.isLast ? 'lime' : 'indigo';
@@ -14,8 +14,8 @@ export function MonthlyButton(props: { isLast: boolean }) {
     const start = format(startOfMonth(baseDate), 'yyyy-MM-dd');
     const end = format(endOfMonth(baseDate), 'yyyy-MM-dd');
 
-    appContext.dispatch({ isStart: true, value: start });
-    appContext.dispatch({ isStart: false, value: end });
+    appContext.dispatch({ type: DispatchType.Date, isStart: true, value: start });
+    appContext.dispatch({ type: DispatchType.Date, isStart: false, value: end });
   };
 
   return (
