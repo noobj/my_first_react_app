@@ -85,7 +85,9 @@ export function App() {
       if (result === null) return;
 
       const { categories, total } = result;
-      setCategories(categories);
+      const sortedCategories = sortingCategories(categories);
+
+      setCategories(sortedCategories);
       setTotal(total);
     }
 
@@ -93,18 +95,22 @@ export function App() {
   }, [state.start, state.end, state.isLogined]);
 
   useEffect(() => {
+    const newCate = sortingCategories(categories);
+
+    setCategories(newCate);
+  }, [state.sortByDate]);
+
+  function sortingCategories(categories: Category[]) {
     let sortFunction: (a: Entry, b: Entry) => number;
     if (state.sortByDate)
       sortFunction = (a: Entry, b: Entry) =>
         +format(new Date(b.date), 't') - +format(new Date(a.date), 't');
     else sortFunction = (a: Entry, b: Entry) => b.amount - a.amount;
-    const newCate = categories.map((category) => {
+    return categories.map((category) => {
       category.entries = category.entries.sort(sortFunction);
       return category;
     });
-
-    setCategories(newCate);
-  }, [state.sortByDate]);
+  }
 
   if (!state.isLogined)
     return (
