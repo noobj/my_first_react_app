@@ -5,6 +5,6 @@ export interface Category {
   color: string;
   _id: number;
   percentage: string;
-  entries: Partial<Entry>[];
+  entries: Entry[];
   sum: number;
 }

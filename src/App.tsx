@@ -3,26 +3,18 @@ import { format, endOfMonth, startOfMonth } from 'date-fns';
 import ControlPanel from './components/control_panel/ControlPanel';
 import { MainContent } from './components/main_content/MainContent';
 import Login from './components/login/Login';
+import { Category } from './interfaces/Category.interface';
 import { fetchOrRefreshAuth } from './helper';
-
-type InitialStateType = {
-  start: string;
-  end: string;
-  sortColumn: SortColumn;
-  isLogined: boolean;
-};
-
-export enum SortColumn {
-  Amount = 0,
-  Date
-}
+import { Entry } from './interfaces/Entry.interface';
 
 const initialState = {
   start: format(startOfMonth(new Date()), 'yyyy-MM-dd HH:mm'),
   end: format(endOfMonth(new Date()), 'yyyy-MM-dd HH:mm'),
-  sortColumn: SortColumn.Amount,
+  sortByDate: false,
   isLogined: true
 };
+
+type InitialStateType = typeof initialState;
 
 export enum DispatchType {
   Date = 1,
@@ -30,19 +22,18 @@ export enum DispatchType {
   Login
 }
 
-function reducer(
-  state: InitialStateType,
-  action: { type: DispatchType; isStart?: boolean; value: string | boolean | SortColumn }
-) {
+type ActionType =
+  | { type: DispatchType.Date; isStart: boolean; value: string }
+  | { type: DispatchType.Login | DispatchType.Sort; value: boolean };
+
+function reducer(state: InitialStateType, action: ActionType) {
   switch (action.type) {
-    // TODO: check types
     case DispatchType.Date:
-      if (action.isStart !== undefined && typeof action.value === 'string')
+      if (typeof action.value === 'string')
         return action.isStart ? { ...state, start: action.value } : { ...state, end: action.value };
       break;
     case DispatchType.Sort:
-      if (typeof action.value == 'number' && action.value in SortColumn)
-        return { ...state, sortColumn: action.value };
+      if (typeof action.value == 'boolean') return { ...state, sortByDate: action.value };
       break;
     case DispatchType.Login:
       if (typeof action.value === 'boolean') return { ...state, isLogined: action.value };
@@ -65,7 +56,7 @@ export const AppContext = createContext<{
 export function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [total, setTotal] = useState(0);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesExclude, setCategoriesExclude] = useState(new Set());
 
   useEffect(() => {
@@ -73,7 +64,6 @@ export function App() {
       const params = new URLSearchParams();
       params.set('timeStart', state.start);
       params.set('timeEnd', state.end);
-      params.set('entriesSortByDate', state.sortColumn.toString());
       setTotal(-1);
 
       const res = await fetchOrRefreshAuth(`/entries?${params.toString()}`, {
@@ -100,7 +90,21 @@ export function App() {
     }
 
     if (state.isLogined) fetchContent();
-  }, [state.start, state.end, state.isLogined, state.sortColumn]);
+  }, [state.start, state.end, state.isLogined]);
+
+  useEffect(() => {
+    let sortFunction: (a: Entry, b: Entry) => number;
+    if (state.sortByDate)
+      sortFunction = (a: Entry, b: Entry) =>
+        +format(new Date(b.date), 't') - +format(new Date(a.date), 't');
+    else sortFunction = (a: Entry, b: Entry) => b.amount - a.amount;
+    const newCate = categories.map((category) => {
+      category.entries = category.entries.sort(sortFunction);
+      return category;
+    });
+
+    setCategories(newCate);
+  }, [state.sortByDate]);
 
   if (!state.isLogined)
     return (

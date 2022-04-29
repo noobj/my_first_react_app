@@ -1,13 +1,11 @@
 import { useContext } from 'react';
-import { AppContext, DispatchType, SortColumn } from '../../App';
+import { AppContext, DispatchType } from '../../App';
 
 export function SortButton() {
   const appContext = useContext(AppContext);
 
   const handleClick = () => {
-    const sortColumnLength = Object.keys(SortColumn).length / 2;
-    const nextSortColumn = (appContext.state.sortColumn + 1) % sortColumnLength;
-    appContext.dispatch({ type: DispatchType.Sort, value: nextSortColumn });
+    appContext.dispatch({ type: DispatchType.Sort, value: !appContext.state.sortByDate });
   };
 
   return (
