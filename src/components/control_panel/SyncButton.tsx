@@ -9,7 +9,7 @@ function SyncButton() {
     fetchOrRefreshAuth(`/entries/sync`, { method: 'POST' })
       .then((res) => res.json())
       .then((res) => {
-        if (res.status === 401) appContext.dispatch({ type: DispatchType.Login, value: false });
+        if (res.status === 401) appContext.dispatch({ type: DispatchType.Logout });
 
         if (res.status === 301) window.location.href = res.message;
 

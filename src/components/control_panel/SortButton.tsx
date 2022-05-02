@@ -5,7 +5,11 @@ export function SortButton() {
   const appContext = useContext(AppContext);
 
   const handleClick = () => {
-    appContext.dispatch({ type: DispatchType.Sort, value: !appContext.state.sortByDate });
+    const dispatchType = appContext.state.sortByDate
+      ? DispatchType.SortByAmount
+      : DispatchType.SortByDate;
+
+    appContext.dispatch({ type: dispatchType });
   };
 
   return (

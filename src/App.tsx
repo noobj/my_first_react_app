@@ -18,13 +18,21 @@ type InitialStateType = typeof initialState;
 
 export enum DispatchType {
   Date = 1,
-  Sort,
-  Login
+  SortByDate,
+  SortByAmount,
+  Login,
+  Logout
 }
 
 type ActionType =
   | { type: DispatchType.Date; isStart: boolean; value: string }
-  | { type: DispatchType.Login | DispatchType.Sort; value: boolean };
+  | {
+      type:
+        | DispatchType.Login
+        | DispatchType.Logout
+        | DispatchType.SortByAmount
+        | DispatchType.SortByDate;
+    };
 
 function reducer(state: InitialStateType, action: ActionType) {
   switch (action.type) {
@@ -32,12 +40,14 @@ function reducer(state: InitialStateType, action: ActionType) {
       if (typeof action.value === 'string')
         return action.isStart ? { ...state, start: action.value } : { ...state, end: action.value };
       break;
-    case DispatchType.Sort:
-      if (typeof action.value == 'boolean') return { ...state, sortByDate: action.value };
-      break;
+    case DispatchType.SortByAmount:
+      return { ...state, sortByDate: false };
+    case DispatchType.SortByDate:
+      return { ...state, sortByDate: true };
     case DispatchType.Login:
-      if (typeof action.value === 'boolean') return { ...state, isLogined: action.value };
-      break;
+      return { ...state, isLogined: true };
+    case DispatchType.Logout:
+      return { ...state, isLogined: false };
     default:
       return state;
   }
@@ -69,13 +79,13 @@ export function App() {
       const res = await fetchOrRefreshAuth(`/entries?${params.toString()}`, {
         credentials: 'include'
       });
+
       if (res.status === 401) {
-        dispatch({ type: DispatchType.Login, value: false });
+        dispatch({ type: DispatchType.Logout });
 
         return null;
       }
 
-      dispatch({ type: DispatchType.Login, value: true });
       const { categories, total } = await res.json();
       return { categories, total };
     }

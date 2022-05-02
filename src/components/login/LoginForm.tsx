@@ -37,7 +37,7 @@ function LoginForm() {
       return;
     }
 
-    appContext.dispatch({ type: DispatchType.Login, value: true });
+    appContext.dispatch({ type: DispatchType.Login });
   }
 
   return (
