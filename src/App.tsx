@@ -8,8 +8,8 @@ import { fetchOrRefreshAuth } from './helper';
 import { Entry } from './interfaces/Entry.interface';
 
 const initialState = {
-  start: format(startOfMonth(new Date()), 'yyyy-MM-dd HH:mm'),
-  end: format(endOfMonth(new Date()), 'yyyy-MM-dd HH:mm'),
+  start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+  end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
   sortByDate: false,
   isLogined: true
 };

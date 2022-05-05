@@ -1,4 +1,5 @@
 import DatePickerInput from './DatePickerInput';
+import LogoutButton from './LogoutButton';
 import { MonthlyButton } from './MonthlyButton';
 import { SortButton } from './SortButton';
 import SyncButton from './SyncButton';
@@ -20,6 +21,7 @@ export default function ControlPanel() {
           <MonthlyButton isLast={true} />
           <MonthlyButton isLast={false} />
           <SortButton />
+          <LogoutButton />
         </div>
         <SyncButton />
       </div>
