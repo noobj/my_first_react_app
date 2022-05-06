@@ -1,5 +1,5 @@
 export interface Entry {
-  _id: number;
+  _id: string;
   account_id: string;
   amount: number;
   date: string;

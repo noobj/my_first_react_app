@@ -11,7 +11,8 @@ const initialState = {
   start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
   end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
   sortByDate: false,
-  isLogined: true
+  isLogined: true,
+  searchString: ''
 };
 
 type InitialStateType = typeof initialState;
@@ -21,7 +22,8 @@ export enum DispatchType {
   SortByDate,
   SortByAmount,
   Login,
-  Logout
+  Logout,
+  Search
 }
 
 type ActionType =
@@ -32,6 +34,10 @@ type ActionType =
         | DispatchType.Logout
         | DispatchType.SortByAmount
         | DispatchType.SortByDate;
+    }
+  | {
+      type: DispatchType.Search;
+      value: string;
     };
 
 function reducer(state: InitialStateType, action: ActionType) {
@@ -48,6 +54,8 @@ function reducer(state: InitialStateType, action: ActionType) {
       return { ...state, isLogined: true };
     case DispatchType.Logout:
       return { ...state, isLogined: false };
+    case DispatchType.Search:
+      return { ...state, searchString: action.value };
     default:
       return state;
   }
@@ -67,6 +75,8 @@ export function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+  const [filteredTotal, setFilteredTotal] = useState(0);
   const [categoriesExclude, setCategoriesExclude] = useState(new Set());
 
   useEffect(() => {
@@ -94,23 +104,64 @@ export function App() {
       const result = await fetchEntries();
       if (result === null) return;
 
-      const { categories, total } = result;
-      const sortedCategories = sortingCategories(categories);
+      const categories = result.categories;
+      let total = result.total;
+      let newCategories = sortCategories(categories);
 
-      setCategories(sortedCategories);
+      setCategories(newCategories);
       setTotal(total);
+
+      if (state.searchString !== '') {
+        const result = filterCategories(categories);
+        newCategories = sortCategories(result.categories);
+        total = result.total;
+        setFilteredCategories(newCategories);
+        setFilteredTotal(total);
+      }
     }
 
     if (state.isLogined) fetchContent();
   }, [state.start, state.end, state.isLogined]);
 
   useEffect(() => {
-    const newCate = sortingCategories(categories);
+    const newCategories = sortCategories(categories);
 
-    setCategories(newCate);
+    if (state.searchString !== '') setFilteredCategories(sortCategories(filteredCategories));
+
+    setCategories(newCategories);
   }, [state.sortByDate]);
 
-  function sortingCategories(categories: Category[]) {
+  useEffect(() => {
+    if (state.searchString === '') return;
+
+    const { categories: newCategories, total } = filterCategories(categories);
+
+    setFilteredCategories(newCategories);
+    setFilteredTotal(total);
+  }, [state.searchString]);
+
+  function filterCategories(categories: Category[]) {
+    const filteredCategories = categories.reduce<Category[]>((collection, category) => {
+      const filteredEntries = category.entries.filter(
+        (entry) => entry.descr.match(new RegExp(state.searchString)) != null
+      );
+
+      if (filteredEntries.length === 0) return collection;
+
+      category.entries = filteredEntries;
+      category.sum = category.entries.reduce((sum, v) => sum + v.amount, 0);
+      return [...collection, category];
+    }, []);
+
+    const total = filteredCategories.reduce((sum, v) => sum + v.sum, 0);
+
+    return {
+      categories: filteredCategories,
+      total
+    };
+  }
+
+  function sortCategories(categories: Category[]) {
     let sortFunction: (a: Entry, b: Entry) => number;
     if (state.sortByDate)
       sortFunction = (a: Entry, b: Entry) =>
@@ -129,12 +180,15 @@ export function App() {
       </AppContext.Provider>
     );
 
+  const categoriesForContent = state.searchString === '' ? categories : filteredCategories;
+  const totalForContent = state.searchString === '' ? total : filteredTotal;
+
   return (
     <>
       <AppContext.Provider value={{ state, dispatch }}>
         <ControlPanel />
       </AppContext.Provider>
-      <MainContent categories={categories} total={total} />
+      <MainContent categories={categoriesForContent} total={totalForContent} />
     </>
   );
 }

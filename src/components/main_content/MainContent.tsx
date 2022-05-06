@@ -13,10 +13,10 @@ type Props = {
 };
 
 export function MainContent(props: Props) {
-  const [categoryOpened, setCategoryOpened] = useState(-1);
+  const [categoryOpened, setCategoryOpened] = useState('-1');
 
-  const clickHandler = (id: number) => {
-    id === categoryOpened ? setCategoryOpened(-1) : setCategoryOpened(id);
+  const clickHandler = (id: string) => {
+    id === categoryOpened ? setCategoryOpened('-1') : setCategoryOpened(id);
   };
 
   const categoryLists = props.categories.map((category) => {

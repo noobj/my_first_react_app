@@ -5,7 +5,7 @@ import { EntryList } from './EntryList';
 type Props = {
   category: Category;
   onClick: () => void;
-  categoryOpened: number;
+  categoryOpened: string;
 };
 
 export default function CategoryList(props: Props) {
