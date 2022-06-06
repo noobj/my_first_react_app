@@ -7,7 +7,7 @@ import { Category } from './interfaces/Category.interface';
 import { fetchOrRefreshAuth } from './helper';
 import { Entry } from './interfaces/Entry.interface';
 
-const initialState = {
+export const initialState = {
   start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
   end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
   sortByDate: false,
@@ -40,7 +40,7 @@ type ActionType =
       value: string;
     };
 
-function reducer(state: InitialStateType, action: ActionType) {
+export function reducer(state: InitialStateType, action: ActionType) {
   switch (action.type) {
     case DispatchType.Date:
       if (typeof action.value === 'string')
