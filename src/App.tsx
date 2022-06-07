@@ -148,9 +148,11 @@ export function App() {
 
       if (filteredEntries.length === 0) return collection;
 
-      category.entries = filteredEntries;
-      category.sum = category.entries.reduce((sum, v) => sum + v.amount, 0);
-      return [...collection, category];
+      // Deep clone for avoiding mutating the original object
+      const newCategory: Category = JSON.parse(JSON.stringify(category));
+      newCategory.entries = filteredEntries;
+      newCategory.sum = newCategory.entries.reduce((sum, v) => sum + v.amount, 0);
+      return [...collection, newCategory];
     }, []);
 
     const total = filteredCategories.reduce((sum, v) => sum + v.sum, 0);
