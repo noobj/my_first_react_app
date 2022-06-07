@@ -7,7 +7,7 @@ import { Category } from './interfaces/Category.interface';
 import { fetchOrRefreshAuth } from './helper';
 import { Entry } from './interfaces/Entry.interface';
 
-export const initialState = {
+const initialState = {
   start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
   end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
   sortByDate: false,
