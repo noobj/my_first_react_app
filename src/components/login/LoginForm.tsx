@@ -22,17 +22,17 @@ function LoginForm() {
   async function handleSubmitClick() {
     const url = '/auth/login';
 
+    const formData = new FormData();
+    formData.append('account', account);
+    formData.append('password', password);
     const res = await fetch(`${baseUrl}${url}`, {
       method: 'POST',
       credentials: 'include',
-      body: new URLSearchParams({
-        account: account,
-        password: password
-      })
+      body: formData
     });
 
     const body = await res.json();
-    if (res.status !== 200) {
+    if (res.status !== 204) {
       alert(body.message);
       return;
     }
