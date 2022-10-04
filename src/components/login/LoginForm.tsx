@@ -31,8 +31,8 @@ function LoginForm() {
       body: formData
     });
 
-    const body = await res.json();
-    if (res.status !== 204) {
+    if (res.status !== 200) {
+      const body = await res.json();
       alert(body.message);
       return;
     }

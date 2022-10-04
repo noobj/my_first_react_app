@@ -164,6 +164,8 @@ export function App() {
   }
 
   function sortCategories(categories: Category[]) {
+    if (categories == null) return [];
+
     let sortFunction: (a: Entry, b: Entry) => number;
     if (state.sortByDate)
       sortFunction = (a: Entry, b: Entry) =>

@@ -6,15 +6,36 @@ function SyncButton() {
   const appContext = useContext(AppContext);
 
   const handleClick = () => {
-    fetchOrRefreshAuth(`/entries/sync`, { method: 'POST' })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.status === 401) appContext.dispatch({ type: DispatchType.Logout });
+    fetchOrRefreshAuth(`/sync`).then(async (res) => {
+      if (res.status === 401) appContext.dispatch({ type: DispatchType.Logout });
 
-        if (res.status === 301) window.location.href = res.message;
+      if (res.status === 301) window.location.href = await res.text();
 
-        if (res.status === 200) alert(res.message);
-      });
+      if (res.status === 200) longPolling(await res.json());
+    });
+  };
+
+  const longPolling = async (taskId: string) => {
+    await fetchOrRefreshAuth(`/sync/check?taskId=${taskId}`).then(async (res) => {
+      if (res.status === 401) appContext.dispatch({ type: DispatchType.Logout });
+
+      if (res.status !== 200) {
+        console.log(res);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await longPolling(taskId);
+      }
+
+      if (res.status === 200) {
+        const body = await res.json();
+        if (body === '1') {
+          alert('Sync Done');
+
+          window.location.href = '/';
+        } else alert('Sync Failed');
+      }
+    });
+
+    return;
   };
 
   return (
